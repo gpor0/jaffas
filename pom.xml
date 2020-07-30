@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire-plugin.version>2.22.1</surefire-plugin.version>
         <swagger.version>1.5.22</swagger.version>
-        <jooreo.version>0.2.2</jooreo.version>
+        <jooreo.version>0.2.3</jooreo.version>
         <java-jwt.version>3.10.3</java-jwt.version>
         <jwks-rsa.version>0.12.0</jwks-rsa.version>
     </properties>
