@@ -93,6 +93,11 @@ public abstract class Security { //todo move this to separate project
         return accessToken;
     }
 
+    public static Optional<String> getSubject(final String token) {
+        DecodedJWT jwt = Security.parse(token);
+        return jwt == null ? Optional.empty() : Optional.ofNullable(jwt.getClaim("sub").asString());
+    }
+
     public static DecodedJWT parse(final String token) {
         final String bearer = token == null || !token.startsWith("Bearer ") ? null : token.split(" ")[1];
 

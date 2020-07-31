@@ -1,8 +1,5 @@
 package com.github.gpor0.commons.exceptions.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,9 +20,6 @@ public class ApiFault {
         return this;
     }
 
-
-    @ApiModelProperty(value = "")
-    @JsonProperty("request")
     public ApiFaultRequest getRequest() {
         return request;
     }
@@ -42,9 +36,6 @@ public class ApiFault {
         return this;
     }
 
-
-    @ApiModelProperty(value = "")
-    @JsonProperty("details")
     public List<ApiFaultDetails> getDetails() {
         return details;
     }
@@ -61,9 +52,6 @@ public class ApiFault {
         return this;
     }
 
-
-    @ApiModelProperty(value = "For debug purpose only, omitted on PROD env.")
-    @JsonProperty("debug")
     public String getDebug() {
         return debug;
     }

@@ -38,6 +38,7 @@ public class DataAccessExceptionMapper extends BaseExceptionMapper implements Ex
             if (matcher.find()) {
                 String group = matcher.group(2);
                 if (group != null) {
+                    //todo get rid of guava
                     String reference = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, group.toLowerCase());
                     fieldMap.put("reference", reference);
                 }

@@ -1,8 +1,5 @@
 package com.github.gpor0.commons.exceptions.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -22,9 +19,6 @@ public class ApiFaultDetails {
         return this;
     }
 
-
-    @ApiModelProperty(value = "")
-    @JsonProperty("faultCode")
     public String getFaultCode() {
         return faultCode;
     }
@@ -41,9 +35,6 @@ public class ApiFaultDetails {
         return this;
     }
 
-
-    @ApiModelProperty(value = "")
-    @JsonProperty("fields")
     public Map<String, String> getFields() {
         return fields;
     }
