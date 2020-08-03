@@ -55,4 +55,10 @@ public class RequestContext {
         }
         return Optional.empty();
     }
+
+    public Optional<String> language() {
+        String language = queryParameters == null ? null : queryParameters.getFirst("lang");
+
+        return Optional.ofNullable(language);
+    }
 }
