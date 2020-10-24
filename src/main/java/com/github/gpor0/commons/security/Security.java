@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.interfaces.RSAPublicKey;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
  * <p>
  * It contains security logic
  */
-public abstract class Security { //todo move this to separate project
+public abstract class Security {
 
     private static final Logger LOG = Logger.getLogger(Security.class.getName());
 
@@ -42,10 +43,6 @@ public abstract class Security { //todo move this to separate project
     public abstract String getApplicationId();
 
     public abstract List<ApplicationRole> getRoles();
-
-    public void initialize() {
-        List<ApplicationRole> roles = getRoles();
-    }
 
     /**
      * This method check if http operation requires scope.
@@ -78,7 +75,8 @@ public abstract class Security { //todo move this to separate project
 
         Set<String> methodScopeSet = new HashSet<>();
         for (Authorization authorization : operation.authorizations()) {
-            Set<String> scopes = Stream.of(authorization.scopes()).map(AuthorizationScope::scope).collect(Collectors.toSet());
+            Set<String> scopes = Stream.of(authorization.scopes()).map(AuthorizationScope::scope)
+                    .filter(Objects::nonNull).filter(Predicate.not(String::isBlank)).collect(Collectors.toSet());
             methodScopeSet.addAll(scopes);
         }
         methodScopeSet.remove(null);
@@ -177,17 +175,23 @@ public abstract class Security { //todo move this to separate project
      * <p>
      * Each operation may implement further security requirements (like user check...).
      *
-     * @param localFileName
+     * @param yamlStream
      */
-    public static AbstractMap.SimpleEntry<List<ApplicationPermission>, List<ApplicationRole>> readYaml(String localFileName) {
+    public AbstractMap.SimpleEntry<List<ApplicationPermission>, List<ApplicationRole>> readYamlSecurity(InputStream yamlStream) {
         final Yaml yaml = new Yaml();
-        InputStream inputStream = Security.class
-                .getClassLoader()
-                .getResourceAsStream(localFileName);
-        Map<String, Object> obj = yaml.load(inputStream);
+        final Map<String, Object> obj = yaml.load(yamlStream);
 
         Map<String, Set<String>> scopeMap = new HashMap<>();
         Map<String, String> scopeDescMap = new HashMap<>();
+        Map<String, String> permissionDescMap = new HashMap<>();
+
+        this.getRoles().stream().forEach(appRole -> {
+            scopeMap.put(appRole.getName(), appRole.getPermissions());
+            scopeDescMap.put(appRole.getName(), appRole.getDescription());
+            appRole.getPermissions().stream().forEach(perm -> permissionDescMap.put(perm, null));
+        });
+
+
         Map<String, Map> components = (Map<String, Map>) obj.get("components");
         Map<String, Map> securitySchemes = (Map<String, Map>) components.get("securitySchemes");
         for (Map.Entry<String, Map> def : securitySchemes.entrySet()) {
@@ -204,7 +208,6 @@ public abstract class Security { //todo move this to separate project
             }
         }
 
-        Map<String, String> permissionDescMap = new HashMap<>();
         Map<String, Map> map = (Map<String, Map>) obj.get("paths");
         for (Map.Entry<String, Map> path : map.entrySet()) {
             Map<String, Map> api = path.getValue();
@@ -271,6 +274,18 @@ public abstract class Security { //todo move this to separate project
             permissions.add(name);
             return this;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public Set<String> getPermissions() {
+            return permissions;
+        }
     }
 
     public static class ApplicationPermission {
@@ -280,6 +295,14 @@ public abstract class Security { //todo move this to separate project
         public ApplicationPermission(String name, String description) {
             this.name = name;
             this.description = description;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
         }
     }
 
