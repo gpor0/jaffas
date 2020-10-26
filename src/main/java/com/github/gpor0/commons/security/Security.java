@@ -7,6 +7,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.github.gpor0.commons.endpoints.model.SyncPermission;
+import com.github.gpor0.commons.endpoints.model.SyncRole;
+import com.github.gpor0.commons.endpoints.model.SyncRolePermissions;
 import com.github.gpor0.commons.exceptions.ForbiddenException;
 import com.github.gpor0.commons.exceptions.UnauthorizedException;
 import com.google.common.collect.Sets;
@@ -26,6 +29,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.gpor0.commons.context.AbstractRequestContextProxy.SYSTEM_UID;
+
 /**
  * This class is meant to be shared among all microservices.
  * <p>
@@ -40,9 +45,13 @@ public abstract class Security {
     @Inject
     protected Config config;
 
-    public abstract String getApplicationId();
+    public abstract String getApplicationName();
 
     public abstract List<ApplicationRole> getRoles();
+
+    public String getClientId() {
+        return config.getValue("auth.client.clientId", String.class);
+    }
 
     /**
      * This method check if http operation requires scope.
@@ -118,23 +127,28 @@ public abstract class Security {
 
         try {
 
-            JwkProvider provider = new UrlJwkProvider(jwkProviderUrl);
-            Jwk jwk = provider.get(jwt.getKeyId());
-            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
+            final JwkProvider provider = new UrlJwkProvider(jwkProviderUrl);
+            final Jwk jwk = provider.get(jwt.getKeyId());
+            final Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
-            JWTVerifier verifier = JWT
+            final JWTVerifier verifier = JWT
                     .require(algorithm)
                     .acceptLeeway(120)
                     .build(); //120 secs for NTP skew
 
             verifier.verify(jwt);
 
-            UUID subjectId = UUID.fromString(jwt.getClaim("sub").asString());
-            Map<String, Object> extClaim = jwt.getClaim("ext").asMap();
-            UUID userId = UUID.fromString((String) extClaim.get("userId"));
-            UUID tenantId = UUID.fromString((String) extClaim.get("tenantId"));
-
             final List<String> scopes = jwt.getClaim("scp").asList(String.class);
+
+            UUID subjectId = SYSTEM_UID;
+            UUID userId = SYSTEM_UID;
+            UUID tenantId = null;
+            if (!scopes.contains(SCOPE_SYSTEM)) {
+                subjectId = UUID.fromString(jwt.getClaim("sub").asString());
+                Map<String, Object> extClaim = jwt.getClaim("ext").asMap();
+                userId = UUID.fromString((String) extClaim.get("userId"));
+                tenantId = UUID.fromString((String) extClaim.get("tenantId"));
+            }
 
             final AccessToken accessToken = new AccessToken();
             accessToken.setSubject(subjectId);
@@ -142,7 +156,7 @@ public abstract class Security {
             accessToken.setTenantId(tenantId);
             accessToken.setScopes(scopes);
 
-            LOG.fine(() -> "Token valid for userId " + userId);
+            LOG.fine(() -> "Token valid for subject " + SYSTEM_UID);
             return accessToken;
         } catch (Exception e) {
             throw new UnauthorizedException("errors.unauthorized.sessionExpired", e);
@@ -177,13 +191,13 @@ public abstract class Security {
      *
      * @param yamlStream
      */
-    public AbstractMap.SimpleEntry<List<ApplicationPermission>, List<ApplicationRole>> readYamlSecurity(InputStream yamlStream) {
+    public SyncRolePermissions readYamlSecurity(InputStream yamlStream) {
         final Yaml yaml = new Yaml();
         final Map<String, Object> obj = yaml.load(yamlStream);
 
-        Map<String, Set<String>> scopeMap = new HashMap<>();
-        Map<String, String> scopeDescMap = new HashMap<>();
-        Map<String, String> permissionDescMap = new HashMap<>();
+        final Map<String, Set<String>> scopeMap = new HashMap<>();
+        final Map<String, String> scopeDescMap = new HashMap<>();
+        final Map<String, String> permissionDescMap = new HashMap<>();
 
         this.getRoles().stream().forEach(appRole -> {
             scopeMap.put(appRole.getName(), appRole.getPermissions());
@@ -192,8 +206,8 @@ public abstract class Security {
         });
 
 
-        Map<String, Map> components = (Map<String, Map>) obj.get("components");
-        Map<String, Map> securitySchemes = (Map<String, Map>) components.get("securitySchemes");
+        final Map<String, Map> components = (Map<String, Map>) obj.get("components");
+        final Map<String, Map> securitySchemes = (Map<String, Map>) components.get("securitySchemes");
         for (Map.Entry<String, Map> def : securitySchemes.entrySet()) {
             Map<String, Map> flows = (Map) def.getValue().get("flows");
 
@@ -208,7 +222,7 @@ public abstract class Security {
             }
         }
 
-        Map<String, Map> map = (Map<String, Map>) obj.get("paths");
+        final Map<String, Map> map = (Map<String, Map>) obj.get("paths");
         for (Map.Entry<String, Map> path : map.entrySet()) {
             Map<String, Map> api = path.getValue();
             for (Map.Entry<String, Map> method : api.entrySet()) {
@@ -232,16 +246,21 @@ public abstract class Security {
             }
         }
 
-        final List<ApplicationRole> applicationRolePermissions = scopeMap.entrySet().stream().map(roleEntry -> {
-            ApplicationRole applicationRole = new ApplicationRole(roleEntry.getKey(), scopeDescMap.get(roleEntry.getKey()));
-            roleEntry.getValue().stream().forEach(permission -> applicationRole.addPermission(permission));
+        final List<SyncRole> applicationRolePermissions = scopeMap.entrySet().stream().map(roleEntry -> {
+            SyncRole applicationRole = new SyncRole();
+            applicationRole.setName(roleEntry.getKey());
+            applicationRole.setDescription(scopeDescMap.get(roleEntry.getKey()));
+            roleEntry.getValue().stream().forEach(permission -> applicationRole.addPermissionsItem(permission));
             return applicationRole;
         }).collect(Collectors.toList());
 
+        final List<SyncPermission> applicationPermissions = permissionDescMap.entrySet().stream().map(e -> new SyncPermission().name(e.getKey()).description(e.getValue())).collect(Collectors.toList());
 
-        final List<ApplicationPermission> applicationPermissions = permissionDescMap.entrySet().stream().map(e -> new ApplicationPermission(e.getKey(), e.getValue())).collect(Collectors.toList());
+        SyncRolePermissions result = new SyncRolePermissions();
+        result.setPermissions(applicationPermissions);
+        result.setRolePermissions(applicationRolePermissions);
 
-        return new AbstractMap.SimpleEntry<>(applicationPermissions, applicationRolePermissions);
+        return result;
     }
 
     protected static void verifyMethodAccess(String operationName, Set<String> methodScopes, AccessToken accessToken) {
@@ -285,24 +304,6 @@ public abstract class Security {
 
         public Set<String> getPermissions() {
             return permissions;
-        }
-    }
-
-    public static class ApplicationPermission {
-        private String name;
-        private String description;
-
-        public ApplicationPermission(String name, String description) {
-            this.name = name;
-            this.description = description;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
         }
     }
 
