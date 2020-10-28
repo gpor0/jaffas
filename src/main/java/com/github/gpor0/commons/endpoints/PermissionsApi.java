@@ -44,6 +44,6 @@ public interface PermissionsApi {
     @Path("/permissions")
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public void syncPermissions(@QueryParam("application") String application, SyncRolePermissions syncRolePermissions);
+    void syncPermissions(@HeaderParam("Authorization") String authHeaderValue, @QueryParam("application") String application, SyncRolePermissions syncRolePermissions);
 }
 

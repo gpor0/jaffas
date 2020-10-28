@@ -5,6 +5,7 @@ import com.github.gpor0.commons.endpoints.PermissionsApi;
 import com.github.gpor0.commons.endpoints.model.SyncRolePermissions;
 import com.github.gpor0.commons.endpoints.model.Token;
 import com.github.gpor0.commons.exceptions.IntegrationException;
+import com.github.gpor0.commons.rest.filters.RestClientLoggingFilter;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
@@ -62,10 +63,12 @@ public class SecurityServiceBean implements SecurityService {
 
         final PermissionsApi api = RestClientBuilder.newBuilder()
                 .baseUrl(url)
+                .register(RestClientLoggingFilter.class)
                 .build(PermissionsApi.class);
 
         String clientId = config.getValue("auth.client.clientId", String.class);
 
-        api.syncPermissions(clientId, syncRolePermissions);
+        Token token = getToken();
+        api.syncPermissions(token.getTokenType() + " " + token.getAccessToken(), clientId, syncRolePermissions);
     }
 }
