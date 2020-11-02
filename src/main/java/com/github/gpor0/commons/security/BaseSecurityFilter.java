@@ -75,7 +75,7 @@ public abstract class BaseSecurityFilter {
         final Collection<Object> tokenScopes = jsonWebToken.getClaim("scp");
         final Map<String, Object> tokenExtClaims = jsonWebToken.getClaim("ext");
 
-        final Set<String> tokenScopeSet = tokenScopes.stream().map(String::valueOf).map(e -> e.replaceAll("\"","")).collect(Collectors.toSet());
+        final Set<String> tokenScopeSet = tokenScopes == null ? Set.of() : tokenScopes.stream().map(String::valueOf).map(e -> e.replaceAll("\"", "")).collect(Collectors.toSet());
         verifyMethodAccess(resourceName, tokenScopeSet, methodScopeSet);
 
         AccessToken accessToken = mapToAccessTokenData(subject, tokenScopeSet, tokenExtClaims);
@@ -85,6 +85,10 @@ public abstract class BaseSecurityFilter {
     }
 
     public static AccessToken mapToAccessTokenData(String subject, Set<String> scopes, Map<String, Object> extClaims) {
+
+        if (subject == null) {
+            return null;
+        }
 
         String subjectId = SYSTEM_UID.toString();
         UUID userId = SYSTEM_UID;
