@@ -1,7 +1,7 @@
 package com.github.gpor0.commons.exceptions.mappers;
 
 import com.github.gpor0.commons.exceptions.model.ApiFaultDetails;
-import com.google.common.base.CaseFormat;
+import com.github.gpor0.commons.rest.RestUtil;
 import org.jooq.exception.DataAccessException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,8 +38,7 @@ public class DataAccessExceptionMapper extends BaseExceptionMapper implements Ex
             if (matcher.find()) {
                 String group = matcher.group(2);
                 if (group != null) {
-                    //todo get rid of guava
-                    String reference = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, group.toLowerCase());
+                    String reference = RestUtil.snakeToCamelCase(group.toLowerCase());//CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, group.toLowerCase());
                     fieldMap.put("reference", reference);
                 }
             }

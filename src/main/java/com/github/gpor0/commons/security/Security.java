@@ -3,14 +3,12 @@ package com.github.gpor0.commons.security;
 import com.github.gpor0.commons.endpoints.model.SyncPermission;
 import com.github.gpor0.commons.endpoints.model.SyncRole;
 import com.github.gpor0.commons.endpoints.model.SyncRolePermissions;
-import com.google.common.collect.Sets;
 import org.eclipse.microprofile.config.Config;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -21,10 +19,8 @@ import java.util.stream.Collectors;
  */
 public abstract class Security {
 
-    private static final Logger LOG = Logger.getLogger(Security.class.getName());
-
     public static final String SCOPE_SYSTEM = "system";
-
+    private static final Logger LOG = Logger.getLogger(Security.class.getName());
     @Inject
     protected Config config;
 
@@ -109,10 +105,19 @@ public abstract class Security {
                 }
                 for (Map<String, List<String>> auth : securities) {
                     for (Map.Entry<String, List<String>> scope : auth.entrySet()) {
-                        Set<String> scopeSet = new HashSet<>(scope.getValue());
-                        Sets.SetView<String> roles = Sets.intersection(scopeSet, scopeMap.keySet());
-                        Sets.SetView<String> permissions = Sets.difference(scopeSet, roles);
-                        permissions.stream().forEach(permission -> permissionDescMap.put(permission, operationId + ": " + description));
+                        Set<String> permissions = new HashSet<>(scope.getValue());
+                        Set<String> roles = scopeMap.keySet();
+                        roles.retainAll(permissions);
+                        permissions.removeAll(roles);//scope.getValue() - registered scopes = permissions
+                        permissions.stream().forEach(permission -> {
+                            String existingDesc = permissionDescMap.get(permission);
+                            if (existingDesc == null) {
+                                existingDesc = operationId + ": " + description;
+                            } else {
+                                existingDesc = existingDesc + " | " + operationId + ": " + description;
+                            }
+                            permissionDescMap.put(permission, existingDesc);
+                        });
                         roles.stream().forEach(role -> scopeMap.get(role).addAll(permissions));
                     }
                 }

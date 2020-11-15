@@ -58,4 +58,19 @@ public class RestUtil {
         return Stream.concat(filterOpsStream, orderByOpsStream).toArray(DataOperation[]::new);
     }
 
+    public static String snakeToCamelCase(String s) {
+        String[] parts = s.toLowerCase().split("_");
+        StringBuffer camelCaseString = new StringBuffer();
+        int i = 0;
+        for (String part : parts) {
+            if (i == 0) {
+                camelCaseString.append(part);
+            } else {
+                camelCaseString.append(part.substring(0, 1).toUpperCase()).append(part.substring(1));
+            }
+            i++;
+        }
+        return camelCaseString.toString();
+    }
+
 }
