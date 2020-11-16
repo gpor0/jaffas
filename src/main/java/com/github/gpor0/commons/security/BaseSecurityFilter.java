@@ -29,6 +29,45 @@ public abstract class BaseSecurityFilter {
 
     private static final Map<String, Set<String>> METHOD_SCOPE_CACHE = new ConcurrentHashMap<>();
 
+    public static AccessToken mapToAccessTokenData(String subject, Set<String> scopes, Map<String, Object> extClaims) {
+
+        if (subject == null) {
+            return null;
+        }
+
+        String subjectId = SYSTEM_UID.toString();
+        UUID userId = SYSTEM_UID;
+        UUID tenantId = null;
+        if (!scopes.contains(SCOPE_SYSTEM)) {
+            subjectId = subject;
+            userId = UUID.fromString((String) extClaims.get("userId"));
+            tenantId = UUID.fromString((String) extClaims.get("tenantId"));
+        }
+
+        final AccessToken accessToken = new AccessToken();
+        accessToken.setSubject(subjectId);
+        accessToken.setUserId(userId);
+        accessToken.setTenantId(tenantId);
+        accessToken.setScopes(scopes);
+
+        return accessToken;
+    }
+
+    protected static void verifyMethodAccess(String resourceName, Set<String> tokenScopes, Set<String> methodScopes) {
+
+        if (methodScopes.isEmpty()) {
+            LOG.fine(() -> "Method " + resourceName + " does not require security grants");
+            return;
+        }
+
+        if (tokenScopes.stream().anyMatch(methodScopes::contains)) {
+            LOG.fine(() -> "Found scope, token scopes: " + tokenScopes + ", method scopes: " + methodScopes);
+        } else {
+            LOG.info(() -> "No scope match for operation " + resourceName + ". Required: " + methodScopes + " Found: " + tokenScopes);
+            throw new ForbiddenException("errors.insufficientPrivileges", methodScopes);
+        }
+    }
+
     /**
      * This method check if http operation requires scope.
      * <p>inte
@@ -71,6 +110,11 @@ public abstract class BaseSecurityFilter {
 
         final JsonWebToken jsonWebToken = CDI.current().select(JsonWebToken.class).get();
 
+        if (jsonWebToken == null) {
+            //public call with no token
+            verifyMethodAccess(resourceName, Set.of(), methodScopeSet);
+            return null;
+        }
         final String subject = jsonWebToken.getSubject();
         final Collection<Object> tokenScopes = jsonWebToken.getClaim("scp");
         final Map<String, Object> tokenExtClaims = jsonWebToken.getClaim("ext");
@@ -82,45 +126,6 @@ public abstract class BaseSecurityFilter {
 
         LOG.fine(() -> "Data access granted to " + accessToken.getUserId());
         return accessToken;
-    }
-
-    public static AccessToken mapToAccessTokenData(String subject, Set<String> scopes, Map<String, Object> extClaims) {
-
-        if (subject == null) {
-            return null;
-        }
-
-        String subjectId = SYSTEM_UID.toString();
-        UUID userId = SYSTEM_UID;
-        UUID tenantId = null;
-        if (!scopes.contains(SCOPE_SYSTEM)) {
-            subjectId = subject;
-            userId = UUID.fromString((String) extClaims.get("userId"));
-            tenantId = UUID.fromString((String) extClaims.get("tenantId"));
-        }
-
-        final AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(subjectId);
-        accessToken.setUserId(userId);
-        accessToken.setTenantId(tenantId);
-        accessToken.setScopes(scopes);
-
-        return accessToken;
-    }
-
-    protected static void verifyMethodAccess(String resourceName, Set<String> tokenScopes, Set<String> methodScopes) {
-
-        if (methodScopes.isEmpty()) {
-            LOG.fine(() -> "Method " + resourceName + " does not require security grants");
-            return;
-        }
-
-        if (tokenScopes.stream().anyMatch(methodScopes::contains)) {
-            LOG.fine(() -> "Found scope, token scopes: " + tokenScopes + ", method scopes: " + methodScopes);
-        } else {
-            LOG.info(() -> "No scope match for operation " + resourceName + ". Required: " + methodScopes + " Found: " + tokenScopes);
-            throw new ForbiddenException("errors.insufficientPrivileges", methodScopes);
-        }
     }
 
     public static class AccessToken {

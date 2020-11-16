@@ -7,14 +7,17 @@ import com.github.gpor0.jooreo.operations.OrderByOperation;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Author: gpor0
  */
-public class RestUtil {
+public class R {
 
     public static final Pattern FILTER_PATTERN = Pattern.compile("(\\[[^\\[]*\\]|[^,])+");
 
@@ -71,6 +74,27 @@ public class RestUtil {
             i++;
         }
         return camelCaseString.toString();
+    }
+
+    /**
+     * Returns information whether str is null, empty or contains only blank spaces
+     *
+     * @param str
+     * @return
+     */
+    public static boolean isBlank(final String str) {
+        return str == null || str.isBlank();
+    }
+
+    /**
+     * Returns all elements found in set1 and not found in set2
+     *
+     * @param set1
+     * @param set2
+     * @return
+     */
+    public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
+        return set1.stream().filter(Predicate.not(set2::contains)).collect(Collectors.toSet());
     }
 
 }
