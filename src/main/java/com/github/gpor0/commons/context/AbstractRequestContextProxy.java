@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.gpor0.commons.security.Security.SCOPE_SYSTEM;
+import static com.github.gpor0.commons.security.Security.SCOPE_WILDCARD;
 
 /**
  * Service must extend this class and implement getBasePath method. Extended class must be @ApplicationScoped
@@ -38,12 +38,12 @@ public abstract class AbstractRequestContextProxy implements RequestContextProxy
     @Override
     public Set<String> getRoles() {
 
-        return SYSTEM_UID.equals(getId()) ? Set.of(SCOPE_SYSTEM) : getRequestContext().getRoles();
+        return SYSTEM_UID.equals(getId()) ? Set.of(SCOPE_WILDCARD) : getRequestContext().getRoles();
     }
 
     @Override
     public boolean hasRole(String role) {
-        return getRoles().contains(role);
+        return SYSTEM_UID.equals(getId()) || getRoles().contains(role);
     }
 
     private RequestContext getRequestContext() {

@@ -42,7 +42,8 @@ public class SecurityServiceBean implements SecurityService {
                     .baseUrl(url)
                     .build(OauthApi.class);
 
-            return api.getToken(authHeader, "client_credentials", "system");
+            // since we implement client integration via wildcard (all permissions)
+            return api.getToken(authHeader, "client_credentials", Security.SCOPE_WILDCARD);
         } catch (MalformedURLException e) {
             throw new NoSuchElementException("Invalid url:" + e.getMessage());
         } catch (Exception e) {

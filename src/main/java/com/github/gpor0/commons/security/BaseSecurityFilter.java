@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.gpor0.commons.context.AbstractRequestContextProxy.SYSTEM_UID;
-import static com.github.gpor0.commons.security.Security.SCOPE_SYSTEM;
 import static com.github.gpor0.commons.security.Security.SCOPE_WILDCARD;
 
 /**
@@ -36,21 +35,29 @@ public abstract class BaseSecurityFilter {
             return null;
         }
 
-        String subjectId = SYSTEM_UID.toString();
-        UUID userId = SYSTEM_UID;
+        UUID userId;
+        final Object userIdClaim = extClaims.get("userId");
+        if (userIdClaim == null) {
+            userId = SYSTEM_UID;
+        } else if (userIdClaim instanceof String) {
+            userId = UUID.fromString((String) userIdClaim);
+        } else {
+            userId = UUID.fromString(userIdClaim.toString().replace("\"", ""));
+        }
+
+        //admin user and client application does not have tenant set
         UUID tenantId = null;
-        if (!scopes.contains(SCOPE_SYSTEM)) {
-            subjectId = subject;
-            Object userIdClaim = extClaims.get("userId");
-            userId = UUID.fromString(userIdClaim instanceof String ? (String) userIdClaim : userIdClaim.toString().replace("\"", ""));
-            Object tenantIdClaim = extClaims.get("tenantId");
-            //system admin has tenant null
-            if (tenantIdClaim != null)
-                tenantId = UUID.fromString(tenantIdClaim instanceof String ? (String) tenantIdClaim : tenantIdClaim.toString().replace("\"", ""));
+        final Object tenantIdClaim = extClaims.get("tenantId");
+        if (tenantIdClaim != null) {
+            if (tenantIdClaim instanceof String) {
+                tenantId = UUID.fromString((String) tenantIdClaim);
+            } else {
+                tenantId = UUID.fromString(tenantIdClaim.toString().replace("\"", ""));
+            }
         }
 
         final AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(subjectId);
+        accessToken.setSubject(subject);
         accessToken.setUserId(userId);
         accessToken.setTenantId(tenantId);
         accessToken.setScopes(scopes);
