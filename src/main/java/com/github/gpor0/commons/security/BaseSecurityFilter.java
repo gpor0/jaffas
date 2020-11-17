@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import static com.github.gpor0.commons.context.AbstractRequestContextProxy.SYSTEM_UID;
 import static com.github.gpor0.commons.security.Security.SCOPE_SYSTEM;
+import static com.github.gpor0.commons.security.Security.SCOPE_WILDCARD;
 
 /**
  * This class is meant to be shared among all microservices.
@@ -40,8 +41,12 @@ public abstract class BaseSecurityFilter {
         UUID tenantId = null;
         if (!scopes.contains(SCOPE_SYSTEM)) {
             subjectId = subject;
-            userId = UUID.fromString((String) extClaims.get("userId"));
-            tenantId = UUID.fromString((String) extClaims.get("tenantId"));
+            Object userIdClaim = extClaims.get("userId");
+            userId = UUID.fromString(userIdClaim instanceof String ? (String) userIdClaim : userIdClaim.toString().replace("\"", ""));
+            Object tenantIdClaim = extClaims.get("tenantId");
+            //system admin has tenant null
+            if (tenantIdClaim != null)
+                tenantId = UUID.fromString(tenantIdClaim instanceof String ? (String) tenantIdClaim : tenantIdClaim.toString().replace("\"", ""));
         }
 
         final AccessToken accessToken = new AccessToken();
@@ -60,7 +65,9 @@ public abstract class BaseSecurityFilter {
             return;
         }
 
-        if (tokenScopes.stream().anyMatch(methodScopes::contains)) {
+        if (tokenScopes.contains(SCOPE_WILDCARD)) {
+            LOG.fine(() -> "Found wildcard scope, token scopes: " + tokenScopes + ", method scopes: " + methodScopes);
+        } else if (tokenScopes.stream().anyMatch(methodScopes::contains)) {
             LOG.fine(() -> "Found scope, token scopes: " + tokenScopes + ", method scopes: " + methodScopes);
         } else {
             LOG.info(() -> "No scope match for operation " + resourceName + ". Required: " + methodScopes + " Found: " + tokenScopes);

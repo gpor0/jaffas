@@ -19,7 +19,12 @@ import java.util.stream.Collectors;
  */
 public abstract class Security {
 
+    //todo remove
     public static final String SCOPE_SYSTEM = "system";
+
+    //wildcard scope (needed for system admin)
+    public static final String SCOPE_WILDCARD = "*:*";
+
     private static final Logger LOG = Logger.getLogger(Security.class.getName());
     @Inject
     protected Config config;
