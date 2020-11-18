@@ -4,28 +4,47 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
-    <artifactId>service-commons</artifactId>
-    <version>1.1.1</version>
-    <name>${project.artifactId}</name>
+    <artifactId>jaffas</artifactId>
+    <version>0.9.1-SNAPSHOT</version>
+    <name>jaFFas</name>
     <description></description>
-    <url>https://github.com/gpor0/service-commons</url>
+    <url>https://github.com/gpor0/jaffas</url>
     <inceptionYear>2020</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/</url>
+        </license>
+    </licenses>
+
     <developers>
         <developer>
             <id>gpor0</id>
-            <name>Gregor Porocnik</name>
+            <name>Gregor</name>
             <url>https://github.com/gpor0</url>
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git@github.com:gpor0/service-commons.git</connection>
-        <developerConnection>scm:git:git@github.com:gpor0/service-commons.git</developerConnection>
-        <url>git@github.com:gpor0/service-commons.git</url>
+        <connection>scm:git:git@github.com:gpor0/jaffas.git</connection>
+        <developerConnection>scm:git:git@github.com:gpor0/jaffas.git</developerConnection>
+        <url>git@github.com:gpor0/jaffas.git</url>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/gpor0/service-commons/issues</url>
+        <url>https://github.com/gpor0/jaffas/issues</url>
     </issueManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
     <properties>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -35,7 +54,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
         <swagger.version>1.6.2</swagger.version>
-        <jooreo.version>0.2.3</jooreo.version>
+        <jooreo.version>0.2.4-SNAPSHOT</jooreo.version>
         <jackson-annotations.version>2.11.3</jackson-annotations.version>
         <jakarta.json-bind.version>1.0.2</jakarta.json-bind.version>
     </properties>
@@ -135,4 +154,71 @@
             </resource>
         </resources>
     </build>
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <!-- deploy plugins -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <gpgArgument>--pinentry-mode</gpgArgument>
+                                        <gpgArgument>loopback</gpgArgument>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
