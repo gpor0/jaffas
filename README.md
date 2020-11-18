@@ -1,4 +1,5 @@
-# service commons
+# jaFFas
+JAva Fast ForwArd Service
 
 This project brings common code, needed for each microservice.
 
