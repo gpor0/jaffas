@@ -38,8 +38,8 @@ public abstract class BaseExceptionMapper {
     @Inject
     protected RequestContextProxy requestContextProxy;
 
-    public static Set<Class> getExceptionMappers() {
-        final Set<Class> result = new HashSet<>();
+    public static Set<Class<?>> getExceptionMappers() {
+        final Set<Class<?>> result = new HashSet<>();
 
         result.add(ConflictExceptionMapper.class);
         result.add(ConstraintViolationExceptionMapper.class);
