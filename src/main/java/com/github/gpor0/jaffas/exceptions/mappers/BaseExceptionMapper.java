@@ -16,10 +16,7 @@ import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class BaseExceptionMapper {
@@ -40,6 +37,26 @@ public abstract class BaseExceptionMapper {
 
     @Inject
     protected RequestContextProxy requestContextProxy;
+
+    public static Set<Class> getExceptionMappers() {
+        final Set<Class> result = new HashSet<>();
+
+        result.add(ConflictExceptionMapper.class);
+        result.add(ConstraintViolationExceptionMapper.class);
+        result.add(DataAccessExceptionMapper.class);
+        result.add(DataChangedExceptionMapper.class);
+        result.add(ForbiddenExceptionMapper.class);
+        result.add(IntegrationExceptionMapper.class);
+        result.add(InvalidParameterExceptionMapper.class);
+        result.add(MissingPropertyExceptionMapper.class);
+        result.add(NotImplementedExceptionMapper.class);
+        result.add(ResourceNotFoundExceptionMapper.class);
+        result.add(ServiceExceptionMapper.class);
+        result.add(UnauthorizedExceptionMapper.class);
+        result.add(UnsupportedOperationExceptionMapper.class);
+
+        return result;
+    }
 
     protected Response toResponse(Response.Status status, List<ApiFaultDetails> faultList, Throwable e) {
         return toResponse(status.getStatusCode(), faultList, e);
@@ -83,7 +100,6 @@ public abstract class BaseExceptionMapper {
 
         return Response.status(status).entity(fault).build();
     }
-
 
     public Response toResponse(Exception e) {
         Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
