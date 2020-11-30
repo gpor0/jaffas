@@ -108,7 +108,7 @@ public abstract class Security {
                 for (Map<String, List<String>> auth : securities) {
                     for (Map.Entry<String, List<String>> scope : auth.entrySet()) {
                         Set<String> permissions = new HashSet<>(scope.getValue());
-                        Set<String> roles = scopeMap.keySet();
+                        Set<String> roles = new HashSet<>(scopeMap.keySet());
                         roles.retainAll(permissions);
                         permissions.removeAll(roles);//scope.getValue() - registered scopes = permissions
                         permissions.stream().forEach(permission -> {
@@ -126,13 +126,15 @@ public abstract class Security {
             }
         }
 
-        final List<SyncRole> applicationRolePermissions = scopeMap.entrySet().stream().map(roleEntry -> {
-            SyncRole applicationRole = new SyncRole();
-            applicationRole.setName(roleEntry.getKey());
-            applicationRole.setDescription(scopeDescMap.get(roleEntry.getKey()));
-            roleEntry.getValue().stream().forEach(permission -> applicationRole.addPermissionsItem(permission));
-            return applicationRole;
-        }).collect(Collectors.toList());
+        final List<SyncRole> applicationRolePermissions = scopeMap.entrySet().stream()
+                .filter(e -> !SCOPE_WILDCARD.equals(e.getKey()))
+                .map(roleEntry -> {
+                    SyncRole applicationRole = new SyncRole();
+                    applicationRole.setName(roleEntry.getKey());
+                    applicationRole.setDescription(scopeDescMap.get(roleEntry.getKey()));
+                    roleEntry.getValue().stream().forEach(permission -> applicationRole.addPermissionsItem(permission));
+                    return applicationRole;
+                }).collect(Collectors.toList());
 
         final List<SyncPermission> applicationPermissions = permissionDescMap.entrySet().stream().map(e -> new SyncPermission().name(e.getKey()).description(e.getValue())).collect(Collectors.toList());
 
