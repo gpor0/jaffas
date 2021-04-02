@@ -50,11 +50,11 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <org.jooq.version>3.13.6</org.jooq.version><!-- 3.14+ is compatible with maria 10.5+ -->
+        <org.jooq.version>3.14.8</org.jooq.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
         <swagger.version>1.6.2</swagger.version>
-        <jooreo.version>0.2.4-SNAPSHOT</jooreo.version>
+        <jooreo.version>0.2.5-SNAPSHOT</jooreo.version>
         <jackson-annotations.version>2.11.3</jackson-annotations.version>
         <jakarta.json-bind.version>1.0.2</jakarta.json-bind.version>
     </properties>
