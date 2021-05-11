@@ -2,8 +2,8 @@ package com.github.gpor0.jaffas.security;
 
 import com.github.gpor0.jaffas.exceptions.ForbiddenException;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.inject.spi.CDI;
@@ -115,9 +115,12 @@ public abstract class BaseSecurityFilter {
             methodScopeSet = METHOD_SCOPE_CACHE.get(methodName);
         } else {
             methodScopeSet = new HashSet<>();
-            for (Authorization authorization : operation.authorizations()) {
-                Stream.of(authorization.scopes()).map(AuthorizationScope::scope)
-                        .filter(Objects::nonNull).filter(Predicate.not(String::isBlank)).forEach(methodScopeSet::add);
+            for (Extension extension : operation.extensions()) {
+                if ("x-security".equals(extension.name())) {
+                    Stream.of(extension.properties()).map(ExtensionProperty::name)
+                            .filter(Objects::nonNull).filter(Predicate.not(String::isBlank)).forEach(methodScopeSet::add);
+                    break;
+                }
             }
             METHOD_SCOPE_CACHE.put(methodName, methodScopeSet);
         }

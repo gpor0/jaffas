@@ -51,6 +51,7 @@ public class SecurityServiceBean implements SecurityService {
         }
     }
 
+    @Override
     public void syncRolePermissions(final SyncRolePermissions syncRolePermissions) {
 
         String serviceUrl = config.getValue("services.iam.url", String.class);

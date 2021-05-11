@@ -3,6 +3,7 @@ package com.github.gpor0.jaffas.security;
 import com.github.gpor0.jaffas.endpoints.model.SyncPermission;
 import com.github.gpor0.jaffas.endpoints.model.SyncRole;
 import com.github.gpor0.jaffas.endpoints.model.SyncRolePermissions;
+import com.github.gpor0.jaffas.rest.R;
 import org.eclipse.microprofile.config.Config;
 import org.yaml.snakeyaml.Yaml;
 
@@ -62,7 +63,7 @@ public abstract class Security {
      *
      * @param yamlStream
      */
-    public SyncRolePermissions readYamlSecurity(InputStream yamlStream) {
+    public SyncRolePermissions readYamlSecurity(InputStream yamlStream, boolean useXSecurity) {
         final Yaml yaml = new Yaml();
         final Map<String, Object> obj = yaml.load(yamlStream);
 
@@ -81,7 +82,9 @@ public abstract class Security {
         final Map<String, Map> securitySchemes = (Map<String, Map>) components.get("securitySchemes");
         for (Map.Entry<String, Map> def : securitySchemes.entrySet()) {
             Map<String, Map> flows = (Map) def.getValue().get("flows");
-
+            if (!"oauth2".equalsIgnoreCase(def.getValue().get("type").toString())) {
+                continue;
+            }
             for (Map.Entry<String, Map> flow : flows.entrySet()) {
                 if (flow != null) {
                     Map<String, String> scopeNameDesc = (Map<String, String>) flow.getValue().get("scopes");
@@ -97,32 +100,59 @@ public abstract class Security {
         for (Map.Entry<String, Map> path : map.entrySet()) {
             Map<String, Map> api = path.getValue();
             for (Map.Entry<String, Map> method : api.entrySet()) {
-                Map methodProps = method.getValue();
-                String operationId = (String) methodProps.get("operationId");
-                String description = (String) methodProps.get("description");
-                List<Map> securities = (List<Map>) methodProps.get("security");
 
-                if (securities == null) {
-                    continue;
-                }
-                for (Map<String, List<String>> auth : securities) {
-                    for (Map.Entry<String, List<String>> scope : auth.entrySet()) {
-                        Set<String> permissions = new HashSet<>(scope.getValue());
-                        Set<String> roles = new HashSet<>(scopeMap.keySet());
-                        roles.retainAll(permissions);
-                        permissions.removeAll(roles);//scope.getValue() - registered scopes = permissions
-                        permissions.stream().forEach(permission -> {
-                            String existingDesc = permissionDescMap.get(permission);
-                            if (existingDesc == null) {
-                                existingDesc = operationId + ": " + description;
-                            } else {
-                                existingDesc = existingDesc + " | " + operationId + ": " + description;
-                            }
-                            permissionDescMap.put(permission, existingDesc);
-                        });
-                        roles.stream().forEach(role -> scopeMap.get(role).addAll(permissions));
+                final Set<String> methodRoles = new HashSet<>();
+                final Set<String> methodPermissions = new HashSet<>();
+
+                final Map methodProps = method.getValue();
+                final String operationId = (String) methodProps.get("operationId");
+                final String description = (String) methodProps.get("description");
+
+                final List<Map> securities = (List<Map>) methodProps.get("security");
+
+                if (securities != null) {
+                    for (Map<String, List<String>> auth : securities) {
+                        for (Map.Entry<String, List<String>> scope : auth.entrySet()) {
+                            Set<String> permissions = new HashSet<>(scope.getValue());
+                            Set<String> roles = new HashSet<>(scopeMap.keySet());
+                            roles.retainAll(permissions);
+                            methodRoles.addAll(roles);
+                            permissions.removeAll(roles);//scope.getValue() - registered scopes = permissions
+
+                            permissions.stream().forEach(permission -> {
+                                String existingDesc = permissionDescMap.get(permission);
+                                if (existingDesc == null) {
+                                    existingDesc = operationId + ": " + description;
+                                } else {
+                                    existingDesc = existingDesc + " | " + operationId + ": " + description;
+                                }
+                                permissionDescMap.put(permission, existingDesc);
+                            });
+                            methodPermissions.addAll(permissions);
+                        }
                     }
                 }
+
+                if (useXSecurity) {
+                    final List<Map<String, String>> xSecurity = (List<Map<String, String>>) methodProps.get("x-security");
+                    if (xSecurity == null) {
+                        continue;
+                    }
+
+                    final Map<String, String> xSecurities = xSecurity.stream().map(Map::entrySet).flatMap(Collection::stream).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                    final Set<String> roles = xSecurities.keySet().stream().filter(scopeMap::containsKey).collect(Collectors.toSet());
+
+                    final Map<String, String> permissions = xSecurities.entrySet().stream().filter(sec -> !roles.contains(sec.getKey())).peek(e -> {
+                        if (R.isBlank(e.getValue()))
+                            e.setValue(description);
+                    })
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                    permissionDescMap.putAll(permissions);
+                    methodPermissions.addAll(permissions.keySet());
+                }
+                methodRoles.stream().forEach(role -> scopeMap.get(role).addAll(methodPermissions));
             }
         }
 
