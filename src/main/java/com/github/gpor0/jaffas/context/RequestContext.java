@@ -1,39 +1,34 @@
 package com.github.gpor0.jaffas.context;
 
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @RequestScoped
 public class RequestContext {
 
     private MultivaluedMap<String, String> queryParameters;
+    private HttpHeaders headers;
     private Optional<UUID> userId;
     private Set<String> roles;
     private String cid;
 
-    public void setUriInfo(UriInfo uriInfo) {
+    public void init(final String cid, final UriInfo uriInfo, final UUID userId, final Set<String> roles, final HttpHeaders headers) {
+        this.cid = cid;
         this.queryParameters = uriInfo.getQueryParameters();
+        this.headers = headers;
+        this.userId = Optional.ofNullable(userId);
+        this.roles = roles;
     }
 
     public Optional<UUID> getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = Optional.ofNullable(userId);
-    }
-
     public Set<String> getRoles() {
         return roles;
-    }
-
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
     }
 
     public boolean hasRole(String role) {
@@ -44,10 +39,6 @@ public class RequestContext {
         return cid;
     }
 
-    public void setCid(String cid) {
-        this.cid = cid;
-    }
-
     public Optional<Boolean> hasRel(String rel) {
         List<String> param = queryParameters == null ? null : queryParameters.get("rel");
         if (param != null && (param.contains(rel) || param.contains("*"))) {
@@ -56,9 +47,26 @@ public class RequestContext {
         return Optional.empty();
     }
 
-    public Optional<String> language() {
-        String language = queryParameters == null ? null : queryParameters.getFirst("lang");
+    public Locale acceptableLocale() {
 
-        return Optional.ofNullable(language);
+        if (headers == null) {
+            return null;
+        }
+
+        List<Locale> acceptableLanguages = headers.getAcceptableLanguages();
+
+        return acceptableLanguages.stream().findFirst().orElse(null);
+    }
+
+    public Optional<String> language() {
+
+        if (headers == null) {
+            //queryParameters == null ? null : queryParameters.getFirst("lang");
+            return null;
+        }
+
+        final Locale acceptableLocale = acceptableLocale();
+
+        return acceptableLocale == null ? Optional.empty() : Optional.of(acceptableLocale.getLanguage());
     }
 }
