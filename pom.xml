@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
     <artifactId>jaffas</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <name>jaFFas</name>
     <description>Java Fast Forward</description>
     <url>https://github.com/gpor0/jaffas</url>
@@ -54,7 +54,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
         <swagger.version>1.6.2</swagger.version>
-        <jooreo.version>0.2.5</jooreo.version>
+        <jooreo.version>0.2.6</jooreo.version>
         <jackson-annotations.version>2.11.3</jackson-annotations.version>
         <jakarta.json-bind.version>1.0.2</jakarta.json-bind.version>
     </properties>
