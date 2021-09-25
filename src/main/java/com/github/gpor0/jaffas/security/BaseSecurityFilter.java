@@ -56,10 +56,19 @@ public abstract class BaseSecurityFilter {
             }
         }
 
+        final Object rolesClaim = extClaims.get("roles");
+        Set<String> roles = null;
+        if (rolesClaim != null) {
+            if (rolesClaim instanceof List) {
+                roles = ((List<Object>) rolesClaim).stream().map(o -> o.toString().replace("\"", "")).collect(Collectors.toSet());
+            }
+        }
+
         final AccessToken accessToken = new AccessToken();
         accessToken.setSubject(subject);
         accessToken.setUserId(userId);
         accessToken.setTenantId(tenantId);
+        accessToken.setRoles(roles == null ? new HashSet<>() : roles);
         accessToken.setScopes(scopes);
 
         return accessToken;
@@ -149,6 +158,7 @@ public abstract class BaseSecurityFilter {
         private String subject;
         private UUID userId;
         private UUID tenantId;
+        private Set<String> roles;
         private Set<String> scopes;
 
         public String getSubject() {
@@ -173,6 +183,14 @@ public abstract class BaseSecurityFilter {
 
         public void setTenantId(UUID tenantId) {
             this.tenantId = tenantId;
+        }
+
+        public Set<String> getRoles() {
+            return roles;
+        }
+
+        public void setRoles(Set<String> roles) {
+            this.roles = roles;
         }
 
         public Set<String> getScopes() {

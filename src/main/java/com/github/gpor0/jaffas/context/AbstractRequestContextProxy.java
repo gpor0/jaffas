@@ -36,14 +36,24 @@ public abstract class AbstractRequestContextProxy implements RequestContextProxy
     }
 
     @Override
-    public Set<String> getRoles() {
+    public Set<String> getIamRoles() {
 
         return SYSTEM_UID.equals(getId()) ? Set.of(SCOPE_WILDCARD) : getRequestContext().getRoles();
     }
 
     @Override
-    public boolean hasRole(String role) {
-        return SYSTEM_UID.equals(getId()) || getRoles().contains(role);
+    public boolean hasIamRole(String role) {
+        return SYSTEM_UID.equals(getId()) || getIamRoles().contains(role);
+    }
+
+    @Override
+    public Set<String> getScopes() {
+        return getRequestContext().getScopes();
+    }
+
+    @Override
+    public boolean hasScope(String s) {
+        return getRequestContext().hasScope(s);
     }
 
     private RequestContext getRequestContext() {

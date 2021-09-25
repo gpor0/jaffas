@@ -12,15 +12,17 @@ public class RequestContext {
     private MultivaluedMap<String, String> queryParameters;
     private HttpHeaders headers;
     private Optional<UUID> userId;
+    private Set<String> scopes;
     private Set<String> roles;
     private String cid;
 
-    public void init(final String cid, final UriInfo uriInfo, final UUID userId, final Set<String> roles, final HttpHeaders headers) {
+    public void init(final String cid, final UriInfo uriInfo, final UUID userId, final Set<String> roles, final Set<String> scopes, final HttpHeaders headers) {
         this.cid = cid;
         this.queryParameters = uriInfo.getQueryParameters();
         this.headers = headers;
         this.userId = Optional.ofNullable(userId);
         this.roles = roles;
+        this.scopes = scopes;
     }
 
     public Optional<UUID> getUserId() {
@@ -33,6 +35,14 @@ public class RequestContext {
 
     public boolean hasRole(String role) {
         return roles.contains(role);
+    }
+
+    public Set<String> getScopes() {
+        return scopes;
+    }
+
+    public boolean hasScope(String scope) {
+        return scopes.contains(scope);
     }
 
     public String getCid() {
