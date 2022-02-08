@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
     <artifactId>jaffas</artifactId>
-    <version>0.9.6</version>
+    <version>0.9.7</version>
     <name>jaFFas</name>
     <description>Java Fast Forward</description>
     <url>https://github.com/gpor0/jaffas</url>
@@ -50,11 +50,11 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <org.jooq.version>3.15.5</org.jooq.version>
+        <org.jooq.version>3.16.3</org.jooq.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
         <swagger.version>1.6.2</swagger.version>
-        <jooreo.version>0.2.8</jooreo.version>
+        <jooreo.version>0.2.9</jooreo.version>
         <jakarta.json-bind.version>1.0.2</jakarta.json-bind.version>
     </properties>
     <dependencies>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.27</version>
+            <version>1.30</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
