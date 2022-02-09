@@ -24,7 +24,7 @@ public class SecurityServiceBean implements SecurityService {
     protected Config config;
 
     @Override
-    public Token getToken() {
+    public Token getToken(String audience) {
         String clientId = config.getValue("auth.client.clientId", String.class);
         String clientSecret = config.getValue("auth.client.clientSecret", String.class);
 
@@ -43,7 +43,7 @@ public class SecurityServiceBean implements SecurityService {
                     .build(OauthApi.class);
 
             // since we implement client integration via wildcard (all permissions)
-            return api.getToken(authHeader, "client_credentials", Security.SCOPE_WILDCARD);
+            return api.getToken(authHeader, "client_credentials", audience, Security.SCOPE_WILDCARD);
         } catch (MalformedURLException e) {
             throw new NoSuchElementException("Invalid url:" + e.getMessage());
         } catch (Exception e) {
@@ -55,6 +55,7 @@ public class SecurityServiceBean implements SecurityService {
     public void syncRolePermissions(final SyncRolePermissions syncRolePermissions) {
 
         String serviceUrl = config.getValue("services.iam.url", String.class);
+        String audience = config.getOptionalValue("auth.client.audience", String.class).orElse(null);
 
         URL url;
         try {
@@ -70,7 +71,7 @@ public class SecurityServiceBean implements SecurityService {
 
         String clientId = config.getValue("auth.client.clientId", String.class);
 
-        Token token = getToken();
+        Token token = getToken(audience);
         api.syncPermissions(token.getTokenType() + " " + token.getAccessToken(), clientId, syncRolePermissions);
     }
 }

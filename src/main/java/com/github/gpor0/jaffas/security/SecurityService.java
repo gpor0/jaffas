@@ -15,7 +15,7 @@ public interface SecurityService {
      *
      * @return Token
      */
-    Token getToken();
+    Token getToken(String audience);
 
     void syncRolePermissions(SyncRolePermissions syncRolePermissions);
 
