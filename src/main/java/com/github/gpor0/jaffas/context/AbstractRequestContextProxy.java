@@ -71,7 +71,11 @@ public abstract class AbstractRequestContextProxy implements RequestContextProxy
 
     @Override
     public Optional<Boolean> hasRel(String rel) {
-        return SYSTEM_UID.equals(getId()) ? Optional.empty() : getRequestContext().hasRel(rel);
+        try {
+            return getRequestContext().hasRel(rel);
+        } catch (ContextNotActiveException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

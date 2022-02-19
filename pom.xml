@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
     <artifactId>jaffas</artifactId>
-    <version>0.9.8</version>
+    <version>0.10.0</version>
     <name>jaFFas</name>
     <description>Java Fast Forward</description>
     <url>https://github.com/gpor0/jaffas</url>
