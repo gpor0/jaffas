@@ -18,7 +18,7 @@ public class IntegrationExceptionMapper extends BaseExceptionMapper implements E
     @Override
     public Response toResponse(IntegrationException e) {
 
-        String faultCode = "error.integrationIssue";
+        String faultCode = e.getCustomFaultCode() == null ? "error.integrationIssue" : e.getCustomFaultCode();
 
         ApiFaultDetails faultDetails = new ApiFaultDetails();
         faultDetails.setFaultCode(faultCode);
