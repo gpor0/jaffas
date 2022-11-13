@@ -57,6 +57,16 @@ public class RequestContext {
         return Optional.empty();
     }
 
+    public Optional<String> getQueryParamValue(String paramName) {
+        List<String> param = queryParameters == null ? null : queryParameters.get(paramName);
+        return param == null || param.size() < 1 ? Optional.empty() : Optional.of(param.get(0));
+    }
+
+    public List<String> getQueryParamValues(String paramName) {
+        List<String> param = queryParameters == null ? null : queryParameters.get(paramName);
+        return param;
+    }
+
     public Locale acceptableLocale() {
 
         if (headers == null) {

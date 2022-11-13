@@ -6,9 +6,7 @@ import org.eclipse.microprofile.config.Config;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.github.gpor0.jaffas.security.Security.SCOPE_WILDCARD;
 
@@ -67,6 +65,22 @@ public abstract class AbstractRequestContextProxy implements RequestContextProxy
         } catch (ContextNotActiveException e) {
         }
         return Optional.empty();
+    }
+
+    public Optional<String> getQueryParamValue(String paramName) {
+        try {
+            return getRequestContext().getQueryParamValue(paramName);
+        } catch (ContextNotActiveException e) {
+        }
+        return Optional.empty();
+    }
+
+    public List<String> getQueryParamValues(String paramName) {
+        try {
+            return getRequestContext().getQueryParamValues(paramName);
+        } catch (ContextNotActiveException e) {
+        }
+        return Arrays.asList();
     }
 
     @Override
