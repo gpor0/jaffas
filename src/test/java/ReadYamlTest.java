@@ -1,6 +1,6 @@
 import com.github.gpor0.jaffas.endpoints.model.SyncRolePermissions;
 import com.github.gpor0.jaffas.security.Security;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
