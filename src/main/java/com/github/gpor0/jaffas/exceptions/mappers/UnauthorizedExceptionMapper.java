@@ -19,7 +19,7 @@ public class UnauthorizedExceptionMapper extends BaseExceptionMapper implements 
         ApiFaultDetails faultDetails = new ApiFaultDetails();
         faultDetails.setFaultCode(e.getCauseMsg());
 
-        LOG.error(e.getMessage());
+        LOG.warn(e.getMessage());
         LOG.debug(e.getMessage(), e);
 
         return toResponse(Response.Status.UNAUTHORIZED, Arrays.asList(faultDetails), e);

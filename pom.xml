@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
     <artifactId>jaffas</artifactId>
-    <version>0.11.4</version>
+    <version>0.11.5</version>
     <name>jaFFas</name>
     <description>Java Fast Forward</description>
     <url>https://github.com/gpor0/jaffas</url>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.1</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
