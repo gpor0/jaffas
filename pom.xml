@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.gpor0</groupId>
     <artifactId>jaffas</artifactId>
-    <version>0.11.6</version>
+    <version>1.0.0-rc.1</version>
     <name>jaFFas</name>
     <description>Java Fast Forward</description>
     <url>https://github.com/gpor0/jaffas</url>
@@ -46,16 +46,19 @@
         </repository>
     </distributionManagement>
     <properties>
-        <compiler-plugin.version>3.10.1</compiler-plugin.version>
+        <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <org.jooq.version>3.16.14</org.jooq.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <org.jooq.version>3.18.7</org.jooq.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <surefire-plugin.version>3.0.0-M9</surefire-plugin.version>
-        <swagger.version>1.6.9</swagger.version>
-        <jooreo.version>0.2.15</jooreo.version>
-        <jakarta.json-bind.version>1.0.2</jakarta.json-bind.version>
+        <surefire-plugin.version>3.1.2</surefire-plugin.version>
+        <swagger.version>1.6.12</swagger.version>
+        <jooreo.version>1.0.0-rc.1</jooreo.version>
+        <jakarta.json-bind.version>3.0.0</jakarta.json-bind.version>
+        <jakarta.cdi.version>4.0.1</jakarta.cdi.version>
+        <jakarta.inject.version>2.0.1</jakarta.inject.version>
+        <jakarta.validation.version>3.0.2</jakarta.validation.version>
     </properties>
     <dependencies>
         <!-- jakarta deps -->
@@ -68,44 +71,44 @@
         <dependency>
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
-            <version>1.0</version>
+            <version>${jakarta.inject.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <version>2.0.2</version>
+            <version>${jakarta.cdi.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>2.0.2</version>
+            <version>${jakarta.validation.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-            <version>2.0.1.Final</version>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- microprofile deps -->
         <dependency>
             <groupId>org.eclipse.microprofile.rest.client</groupId>
             <artifactId>microprofile-rest-client-api</artifactId>
-            <version>2.0</version>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.microprofile.jwt</groupId>
             <artifactId>microprofile-jwt-auth-api</artifactId>
-            <version>1.2</version>
+            <version>2.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
-            <version>2.0.1</version>
+            <version>3.0.3</version>
             <scope>provided</scope>
         </dependency>
         <!-- Swagger deps -->
@@ -130,7 +133,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
@@ -142,7 +145,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.2</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

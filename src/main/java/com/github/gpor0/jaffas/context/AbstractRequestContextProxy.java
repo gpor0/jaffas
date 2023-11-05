@@ -3,9 +3,9 @@ package com.github.gpor0.jaffas.context;
 import com.github.gpor0.jooreo.RequestContextProxy;
 import org.eclipse.microprofile.config.Config;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 import java.util.*;
 
 import static com.github.gpor0.jaffas.security.Security.SCOPE_WILDCARD;

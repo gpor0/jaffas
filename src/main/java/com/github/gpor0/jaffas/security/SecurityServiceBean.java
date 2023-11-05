@@ -9,8 +9,8 @@ import com.github.gpor0.jaffas.rest.filters.RestClientLoggingFilter;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;

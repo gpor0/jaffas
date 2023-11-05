@@ -6,7 +6,7 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDI;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

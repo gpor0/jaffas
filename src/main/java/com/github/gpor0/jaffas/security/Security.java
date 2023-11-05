@@ -7,7 +7,7 @@ import com.github.gpor0.jaffas.rest.R;
 import org.eclipse.microprofile.config.Config;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Logger;

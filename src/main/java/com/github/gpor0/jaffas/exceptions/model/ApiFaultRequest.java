@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2020-07-30T13:21:25.217127+02:00[Europe/Ljubljana]")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2020-07-30T13:21:25.217127+02:00[Europe/Ljubljana]")
 public class ApiFaultRequest {
 
     private String rUid;

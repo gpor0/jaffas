@@ -3,10 +3,7 @@ package com.github.gpor0.jaffas.rest.filters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.*;
 
 public class RestClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter {
 

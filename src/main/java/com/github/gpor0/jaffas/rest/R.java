@@ -4,7 +4,7 @@ import com.github.gpor0.jooreo.operations.DataOperation;
 import com.github.gpor0.jooreo.operations.FilterOperation;
 import com.github.gpor0.jooreo.operations.OrderByOperation;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Optional;
 import java.util.Set;

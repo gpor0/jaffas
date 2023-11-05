@@ -3,10 +3,10 @@ package com.github.gpor0.jaffas.exceptions.mappers;
 import com.github.gpor0.jaffas.exceptions.UnauthorizedException;
 import com.github.gpor0.jaffas.exceptions.model.ApiFaultDetails;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.util.Arrays;
 
 @Provider

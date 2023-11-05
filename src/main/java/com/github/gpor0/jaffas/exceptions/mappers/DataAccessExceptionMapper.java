@@ -4,10 +4,10 @@ import com.github.gpor0.jaffas.exceptions.model.ApiFaultDetails;
 import com.github.gpor0.jaffas.rest.R;
 import org.jooq.exception.DataAccessException;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

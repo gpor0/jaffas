@@ -10,10 +10,10 @@ import com.github.gpor0.jooreo.RequestContextProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.core.*;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
+import jakarta.ws.rs.core.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;

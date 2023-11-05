@@ -25,7 +25,7 @@
 package com.github.gpor0.jaffas.endpoints.model;
 
 
-import javax.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 public class SyncPermission  {
   

@@ -2,7 +2,7 @@ package com.github.gpor0.jaffas.endpoints;
 
 import com.github.gpor0.jaffas.endpoints.model.Token;
 
-import javax.ws.rs.*;
+import jakarta.ws.rs.*;
 
 @Path("/")
 public interface OauthApi {
