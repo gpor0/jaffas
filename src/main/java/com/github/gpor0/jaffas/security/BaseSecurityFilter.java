@@ -93,7 +93,7 @@ public abstract class BaseSecurityFilter {
 
     /**
      * This method check if http operation requires scope.
-     * <p>inte
+     * <p>
      * Returns Access token data or null when operation does not require scope
      * <p>
      * It throws
