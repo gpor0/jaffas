@@ -6,6 +6,8 @@ import com.github.gpor0.jooreo.operations.OrderByOperation;
 
 import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -40,20 +42,20 @@ public class R {
 
     public static DataOperation[] buildOperations(UriInfo uri) {
 
-        String order = uri.getQueryParameters().getFirst("order");
+        String order = uri.getQueryParameters(false).getFirst("order");
 
         Stream<DataOperation> orderByOpsStream;
         if (order != null && !order.isBlank()) {
-            orderByOpsStream = Stream.of(order.split(",")).map(OrderByOperation::parse);
+            orderByOpsStream = Stream.of(order.split(",")).map(f -> URLDecoder.decode(f, StandardCharsets.UTF_8)).map(OrderByOperation::parse);
         } else {
             orderByOpsStream = Stream.empty();
         }
 
-        String filter = uri.getQueryParameters().getFirst("filter");
+        String filter = uri.getQueryParameters(false).getFirst("filter");
 
         Stream<DataOperation> filterOpsStream;
         if (filter != null && !filter.isBlank()) {
-            filterOpsStream = FILTER_PATTERN.matcher(filter).results().map(MatchResult::group).map(FilterOperation::parse);
+            filterOpsStream = FILTER_PATTERN.matcher(filter).results().map(MatchResult::group).map(f -> URLDecoder.decode(f, StandardCharsets.UTF_8)).map(FilterOperation::parse);
         } else {
             filterOpsStream = Stream.empty();
         }
