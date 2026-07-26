@@ -48,6 +48,7 @@ public abstract class BaseExceptionMapper {
         result.add(ForbiddenExceptionMapper.class);
         result.add(IntegrationExceptionMapper.class);
         result.add(InvalidParameterExceptionMapper.class);
+        result.add(MethodNotAllowedExceptionMapper.class);
         result.add(MissingPropertyExceptionMapper.class);
         result.add(NotImplementedExceptionMapper.class);
         result.add(ResourceNotFoundExceptionMapper.class);
